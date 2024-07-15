@@ -6,6 +6,30 @@ from django.db.models.functions import Lower # Returns lower cased value of fiel
 
 # Create your models here.
 
+class Language(models.Model):
+    name = models.CharField(
+        max_length=20,
+        unique=True,
+        help_text="Enter the book's language"
+    )
+    def get_absolute_url(self):
+        """Returns the url to access a particular language instance."""
+        return reverse('language-detail', args=[str(self.id)])
+
+
+    def __str__(self):
+        """String for representing the Model object (in Admin site etc.)"""
+        return self.name
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(
+                Lower('name'),
+                name='language_name_case_insensitive_unique',
+                violation_error_message = "Language already exists (case insensitive match)"
+            ),
+        ]
+
 class Genre(models.Model):
     """Model representing a book genre."""
     name = models.CharField(
@@ -49,6 +73,9 @@ class Book(models.Model):
     # Genre class has already been defined so we can specify the object above.
     genre = models.ManyToManyField(
         Genre, help_text="Select a genre for this book")
+    language = models.ForeignKey(
+        'Language', on_delete=models.SET_NULL, null=True
+    )
 
     def __str__(self):
         """String for representing the Model object."""
