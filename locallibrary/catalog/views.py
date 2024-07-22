@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
 
+
 def index(request):
     """View function for home page of site."""
 
