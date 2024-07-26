@@ -2,8 +2,8 @@ from django.http import Http404
 from django.shortcuts import render
 from django.views import generic
 from .models import Book, Author, BookInstance, Genre
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.conf import settings
 
 
@@ -98,10 +98,11 @@ class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
             .order_by('due_back')
         )
 
-class AllLoanedBooksView(LoginRequiredMixin, generic.ListView):
+class AllLoanedBooksView(PermissionRequiredMixin, generic.ListView):
     model = BookInstance
     template_name = 'catalog/all_instance_list_borrowed.html'
     paginate_by = 10
+    permission_required = 'catalog.can_mark_returned'
 
     def get_queryset(self):
         return (
